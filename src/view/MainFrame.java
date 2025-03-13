@@ -1,0 +1,156 @@
+package view;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.io.File;
+
+public class MainFrame extends JFrame {
+    private final static String TITLE = "Media Organizer";
+    private final static int WIDTH = 800;
+    private final static int HEIGHT = 600;
+    private JPanel panel;
+    private JLabel label;
+    private JTextField folderPathField;
+    private JButton browseButton;
+    private JRadioButton yearRadioButton, monthRadioButton, dayRadioButton;
+    private ButtonGroup radioGroup;
+    private JButton startButton;
+
+
+    public MainFrame() {
+        setTitle(TITLE);
+        setSize(WIDTH, HEIGHT);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null); // Center the window
+
+        initComponents();  // Initialize UI components
+        setupLayout();     // Arrange UI components in the panel
+        setupButtonActions(); // Add button event listeners
+
+        setVisible(true);
+    }
+
+    private void initComponents() {
+        panel = new JPanel(new GridBagLayout());
+
+        // Title Label
+        label = new JLabel(TITLE);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+
+        // Folder Path Field
+        folderPathField = new JTextField(30);
+        folderPathField.setHorizontalAlignment(JTextField.CENTER);
+        folderPathField.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        // Browse Button
+        browseButton = new JButton("Browse");
+
+        // Radio buttons
+        yearRadioButton = new JRadioButton("Year");
+        monthRadioButton = new JRadioButton("Month");
+        dayRadioButton = new JRadioButton("Day");
+
+
+        // Group Radio Buttons
+        radioGroup = new ButtonGroup();
+        radioGroup.add(yearRadioButton);
+        radioGroup.add(monthRadioButton);
+        radioGroup.add(dayRadioButton);
+        // Default radio button
+        monthRadioButton.setSelected(true);
+
+        // Start Button
+        startButton = new JButton("Start");
+        startButton.setEnabled(false);
+    }
+
+    private void setupLayout() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 20, 0); // Default spacing
+
+        // Title Label
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(label, gbc);
+
+        // Folder Path Field
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(folderPathField, gbc);
+
+        // Browse Button
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(browseButton, gbc);
+
+        // Radio Button Panel
+        JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        radioPanel.add(yearRadioButton);
+        radioPanel.add(monthRadioButton);
+        radioPanel.add(dayRadioButton);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(radioPanel, gbc);
+
+        // Start Button
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(startButton, gbc);
+
+        add(panel);
+    }
+
+    private void setupButtonActions() {
+        setupBrowseButtonAction();
+        setupStartButtonAction();
+    }
+
+    private void setupBrowseButtonAction() {
+        browseButton.addActionListener(e -> {
+            JFileChooser folderChooser = new JFileChooser();
+            folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); // Only allow folder selection
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    "Image Files (*.jpg, *.png, *.gif)", "jpg", "png", "gif");
+            folderChooser.setFileFilter(filter);
+            int returnValue = folderChooser.showOpenDialog(null);
+
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFolder = folderChooser.getSelectedFile();
+                folderPathField.setText(selectedFolder.getAbsolutePath());
+                startButton.setEnabled(true);
+            }
+        });
+    }
+
+    private void setupStartButtonAction() {
+        startButton.addActionListener(e -> {
+            // Is the given path valid
+            File folder = new File(folderPathField.getText());
+            if (!(folder.exists() && folder.isDirectory())) {
+                // TODO: Show the error message
+                System.out.println("Path not valid: " + folderPathField.getText());
+            }
+
+            radioGroup.getElements().asIterator().forEachRemaining(radioButton -> {
+                if (radioButton.isSelected()) {
+                    System.out.println("Selected radio button: " + radioButton.getText());
+                }
+            });
+
+        });
+    }
+
+
+
+
+
+}
