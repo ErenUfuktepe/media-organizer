@@ -3,42 +3,21 @@ package model;
 import enums.FileSystemType;
 
 public abstract class FileSystemComponent {
-    // Name of the component
-    private String name;
-    // Component location
-    private String directory;
-    // Component type
-    private FileSystemType type;
 
-    FileSystemComponent(String name, String directory) {
-        this.name = name;
-        this.directory = directory;
+    public void add(FileSystemComponent fileSystemComponent) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getAbsolutePath(){
+        throw new UnsupportedOperationException();
     }
 
     public String getName() {
-        return name;
-    }
-
-    public FileSystemComponent setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getDirectory() {
-        return directory;
-    }
-
-    public FileSystemComponent setDirectory(String directory) {
-        this.directory = directory;
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     public FileSystemType getType() {
-        return type;
+        throw new UnsupportedOperationException();
     }
 
-    public FileSystemComponent setType(FileSystemType type) {
-        this.type = type;
-        return this;
-    }
 }

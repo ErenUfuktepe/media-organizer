@@ -1,22 +1,43 @@
 package model;
 
-import enums.FileExtension;
 import enums.FileSystemType;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 public class File extends FileSystemComponent {
-    private LocalDateTime createdDateTime;
-    private double size;
-    private FileExtension fileExtension;
 
-    File(String name, String directory) {
-        super(name, directory);
-        this.setType(FileSystemType.FILE);
+    private String name;
+    private String absolutePath;
+    private FileSystemType type;
 
-        String[] nameParts = name.split(".");
-        fileExtension = FileExtension.fromDisplayName(nameParts[nameParts.length - 1]);
-        System.out.println(fileExtension);
+    public File(String name, String absolutePath) {
+        setName(name);
+        setAbsolutePath(absolutePath);
+        setType(FileSystemType.FILE);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getAbsolutePath() {
+        return absolutePath;
+    }
+
+    public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = absolutePath;
+    }
+
+    @Override
+    public FileSystemType getType() {
+        return type;
+    }
+
+    public void setType(FileSystemType type) {
+        this.type = type;
     }
 }

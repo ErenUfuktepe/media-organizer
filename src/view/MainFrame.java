@@ -1,9 +1,12 @@
 package view;
 
+import controller.MediaController;
+import enums.OrganizeType;
+import utils.FileUtils;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.io.File;
 
 public class MainFrame extends JFrame {
     private final static String TITLE = "Media Organizer";
@@ -17,6 +20,7 @@ public class MainFrame extends JFrame {
     private ButtonGroup radioGroup;
     private JButton startButton;
 
+    private final MediaController mediaController = new MediaController();
 
     public MainFrame() {
         setTitle(TITLE);
@@ -102,8 +106,10 @@ public class MainFrame extends JFrame {
         // Start Button
         gbc.gridx = 0;
         gbc.gridy = 4;
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 0, 20, 0);
         gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(startButton, gbc);
 
         add(panel);
@@ -124,8 +130,7 @@ public class MainFrame extends JFrame {
             int returnValue = folderChooser.showOpenDialog(null);
 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File selectedFolder = folderChooser.getSelectedFile();
-                folderPathField.setText(selectedFolder.getAbsolutePath());
+                folderPathField.setText(folderChooser.getSelectedFile().getAbsolutePath());
                 startButton.setEnabled(true);
             }
         });
@@ -133,24 +138,19 @@ public class MainFrame extends JFrame {
 
     private void setupStartButtonAction() {
         startButton.addActionListener(e -> {
-            // Is the given path valid
-            File folder = new File(folderPathField.getText());
-            if (!(folder.exists() && folder.isDirectory())) {
+            if (!FileUtils.isValidDirectory(folderPathField.getText())) {
                 // TODO: Show the error message
                 System.out.println("Path not valid: " + folderPathField.getText());
             }
 
             radioGroup.getElements().asIterator().forEachRemaining(radioButton -> {
                 if (radioButton.isSelected()) {
+                    mediaController.organizeMedia(folderPathField.getText(), OrganizeType.fromDisplayName(radioButton.getText()));
                     System.out.println("Selected radio button: " + radioButton.getText());
                 }
             });
-
         });
     }
-
-
-
 
 
 }
