@@ -7,6 +7,7 @@ public class File extends FileSystemComponent {
     private String name;
     private String absolutePath;
     private FileSystemType type;
+    private String creationDate;
 
     public File(String name, String absolutePath) {
         setName(name);
@@ -39,5 +40,13 @@ public class File extends FileSystemComponent {
 
     public void setType(FileSystemType type) {
         this.type = type;
+    }
+
+    public String getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
     }
 }

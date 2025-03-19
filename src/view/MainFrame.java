@@ -6,9 +6,13 @@ import utils.FileUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
+import java.util.List;
 
 public class MainFrame extends JFrame {
+    private final static String DESKTOP_LOCATION = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath();
+    private final List<String> extensions = List.of("jpg", "png", "gif", "jpeg");
     private final static String TITLE = "Media Organizer";
     private final static int WIDTH = 800;
     private final static int HEIGHT = 600;
@@ -16,11 +20,10 @@ public class MainFrame extends JFrame {
     private JLabel label;
     private JTextField folderPathField;
     private JButton browseButton;
-    private JRadioButton yearRadioButton, monthRadioButton, dayRadioButton;
+    private JRadioButton monthRadioButton, weekRadioButton, dayRadioButton;
     private ButtonGroup radioGroup;
     private JButton startButton;
-
-    private final MediaController mediaController = new MediaController();
+    private final MediaController mediaController = new MediaController(extensions);
 
     public MainFrame() {
         setTitle(TITLE);
@@ -51,15 +54,15 @@ public class MainFrame extends JFrame {
         browseButton = new JButton("Browse");
 
         // Radio buttons
-        yearRadioButton = new JRadioButton("Year");
         monthRadioButton = new JRadioButton("Month");
+        weekRadioButton = new JRadioButton("Week");
         dayRadioButton = new JRadioButton("Day");
 
 
         // Group Radio Buttons
         radioGroup = new ButtonGroup();
-        radioGroup.add(yearRadioButton);
         radioGroup.add(monthRadioButton);
+        radioGroup.add(weekRadioButton);
         radioGroup.add(dayRadioButton);
         // Default radio button
         monthRadioButton.setSelected(true);
@@ -93,8 +96,8 @@ public class MainFrame extends JFrame {
 
         // Radio Button Panel
         JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        radioPanel.add(yearRadioButton);
         radioPanel.add(monthRadioButton);
+        radioPanel.add(weekRadioButton);
         radioPanel.add(dayRadioButton);
 
         gbc.gridx = 0;
@@ -125,7 +128,7 @@ public class MainFrame extends JFrame {
             JFileChooser folderChooser = new JFileChooser();
             folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); // Only allow folder selection
             FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "Image Files (*.jpg, *.png, *.gif)", "jpg", "png", "gif");
+                    "Image Files (*.jpg, *.png, *.gif, etc)", String.valueOf(extensions));
             folderChooser.setFileFilter(filter);
             int returnValue = folderChooser.showOpenDialog(null);
 
@@ -145,7 +148,7 @@ public class MainFrame extends JFrame {
 
             radioGroup.getElements().asIterator().forEachRemaining(radioButton -> {
                 if (radioButton.isSelected()) {
-                    mediaController.organizeMedia(folderPathField.getText(), OrganizeType.fromDisplayName(radioButton.getText()));
+                    mediaController.organizeMedia(folderPathField.getText(), DESKTOP_LOCATION, OrganizeType.fromDisplayName(radioButton.getText()));
                     System.out.println("Selected radio button: " + radioButton.getText());
                 }
             });

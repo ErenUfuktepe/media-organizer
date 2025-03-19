@@ -3,6 +3,10 @@ package utils;
 import enums.OrganizeType;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FileUtils {
 
@@ -15,8 +19,7 @@ public class FileUtils {
 
     public static boolean isValidDirectory(String path) {
         try {
-            File fileSystemComponent =  new File(path);
-            return (fileSystemComponent.exists() && fileSystemComponent.isDirectory());
+            return new File(path).exists();
         }
         catch (Exception exception) {
             throw exception;
@@ -36,6 +39,18 @@ public class FileUtils {
             throw new RuntimeException(exception);
         }
     }
+
+    public static String getCreationDate(File file){
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            BasicFileAttributes fileAttribute = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            return dateFormat.format(new Date(fileAttribute.creationTime().toMillis()));
+        }
+        catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
 
     public static boolean copyFile(String path, OrganizeType organizeType) {
         try{

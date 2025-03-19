@@ -2,16 +2,20 @@ package controller;
 
 import enums.FileSystemType;
 import enums.OrganizeType;
+import model.File;
 import model.FileSystemComponent;
 import model.Folder;
-import model.File;
 import utils.FileUtils;
+
+import java.util.List;
 
 
 public class MediaController {
 
-    public MediaController() {
+    private final List<String> extensions;
 
+    public MediaController(List<String> extensions) {
+        this.extensions = extensions;
     }
 
     private FileSystemComponent buildFileSystemTree(String path) {
@@ -20,10 +24,12 @@ public class MediaController {
             Folder folder = new Folder(mainFolder.getName(), mainFolder.getAbsolutePath());
 
             for (java.io.File fileSystemObject : mainFolder.listFiles()) {
-                if (fileSystemObject.isFile()) {
+                if (fileSystemObject.isFile() && extensions.contains(getFileExtension(fileSystemObject.getName()))) {
+                    File file = new File(fileSystemObject.getName(), fileSystemObject.getAbsolutePath());
+                    file.setCreationDate(FileUtils.getCreationDate(fileSystemObject));
                     folder.add(new File(fileSystemObject.getName(), fileSystemObject.getAbsolutePath()));
                 }
-                else {
+                else if (fileSystemObject.isDirectory()) {
                     folder.add(buildFileSystemTree(fileSystemObject.getAbsolutePath()));
                 }
             }
@@ -34,15 +40,16 @@ public class MediaController {
         }
     }
 
-    public void organizeMedia(String path, OrganizeType organizeType) {
+    public void organizeMedia(String sourcePath, String targetPath, OrganizeType organizeType) {
         try {
-            Folder folder = (Folder) buildFileSystemTree(path);
+            Folder folder = (Folder) buildFileSystemTree(sourcePath);
             for (FileSystemComponent component : folder.getFileSystemComponentList()) {
                 if (component.getType().equals(FileSystemType.FILE)) {
                     // TODO: COPY FILE
+                    System.out.println(component.getName());
                 }
                 else {
-                    organizeMedia(component.getAbsolutePath(), organizeType);
+                    organizeMedia(component.getAbsolutePath(), targetPath, organizeType);
                 }
             }
         }
@@ -51,6 +58,13 @@ public class MediaController {
         }
     }
 
+    public String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex > 0 && lastDotIndex < fileName.length() - 1) {
+            return fileName.substring(lastDotIndex + 1);
+        }
+        return null;
+    }
 
 
 }
