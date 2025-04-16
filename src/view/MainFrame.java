@@ -6,12 +6,10 @@ import utils.FileUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.util.List;
 
 public class MainFrame extends JFrame {
-    private final static String DESKTOP_LOCATION = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath();
     private final List<String> extensions = List.of("jpg", "png", "gif", "jpeg");
     private final static String TITLE = "Media Organizer";
     private final static int WIDTH = 800;
@@ -142,14 +140,13 @@ public class MainFrame extends JFrame {
     private void setupStartButtonAction() {
         startButton.addActionListener(e -> {
             if (!FileUtils.isValidDirectory(folderPathField.getText())) {
-                // TODO: Show the error message
-                System.out.println("Path not valid: " + folderPathField.getText());
+                System.err.println("Path not valid: " + folderPathField.getText());
             }
 
             radioGroup.getElements().asIterator().forEachRemaining(radioButton -> {
                 if (radioButton.isSelected()) {
-                    mediaController.organizeMedia(folderPathField.getText(), DESKTOP_LOCATION, OrganizeType.fromDisplayName(radioButton.getText()));
-                    System.out.println("Selected radio button: " + radioButton.getText());
+                    mediaController.organizeMedia(folderPathField.getText(), OrganizeType.fromDisplayName(radioButton.getText()));
+                    mediaController.shutdown();
                 }
             });
         });

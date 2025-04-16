@@ -5,14 +5,19 @@ import enums.OrganizeType;
 import model.File;
 import model.FileSystemComponent;
 import model.Folder;
+import service.FileTaskManager;
 import utils.FileUtils;
 
+import javax.swing.filechooser.FileSystemView;
+import java.io.InvalidObjectException;
 import java.util.List;
 
 
 public class MediaController {
 
+    private final static String DESKTOP_LOCATION = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath() + "/media-organizer";
     private final List<String> extensions;
+    private FileTaskManager fileTaskManager = new FileTaskManager(5);
 
     public MediaController(List<String> extensions) {
         this.extensions = extensions;
@@ -27,7 +32,7 @@ public class MediaController {
                 if (fileSystemObject.isFile() && extensions.contains(getFileExtension(fileSystemObject.getName()))) {
                     File file = new File(fileSystemObject.getName(), fileSystemObject.getAbsolutePath());
                     file.setCreationDate(FileUtils.getCreationDate(fileSystemObject));
-                    folder.add(new File(fileSystemObject.getName(), fileSystemObject.getAbsolutePath()));
+                    folder.add(file);
                 }
                 else if (fileSystemObject.isDirectory()) {
                     folder.add(buildFileSystemTree(fileSystemObject.getAbsolutePath()));
@@ -40,22 +45,56 @@ public class MediaController {
         }
     }
 
-    public void organizeMedia(String sourcePath, String targetPath, OrganizeType organizeType) {
+    public void organizeMedia(String sourcePath, OrganizeType organizeType) {
         try {
             Folder folder = (Folder) buildFileSystemTree(sourcePath);
             for (FileSystemComponent component : folder.getFileSystemComponentList()) {
                 if (component.getType().equals(FileSystemType.FILE)) {
-                    // TODO: COPY FILE
-                    System.out.println(component.getName());
+                    String destination = DESKTOP_LOCATION + "/" + generateFolderLocation((File) component, organizeType);
+                    fileTaskManager.copyFile(component, destination);
                 }
                 else {
-                    organizeMedia(component.getAbsolutePath(), targetPath, organizeType);
+                    organizeMedia(component.getAbsolutePath(), organizeType);
                 }
             }
         }
         catch (Exception exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    private String generateFolderLocation(File file, OrganizeType organizeType) {
+        try {
+            switch (organizeType) {
+                case DAY:
+                    return file.getCreationDate();
+                case WEEK:
+                    int day = Integer.parseInt(file.getCreationDate().substring(6, 8), 10);
+                    if (day <= 7) {
+                        return file.getCreationDate().substring(0, 4) + file.getCreationDate().substring(4, 6) + "01-07";
+                    }
+                    else if (day > 7 && day <= 14) {
+                        return file.getCreationDate().substring(0, 4) + file.getCreationDate().substring(4, 6) + "08-14";
+                    }
+                    else if (day > 14 && day <= 21) {
+                        return file.getCreationDate().substring(0, 4) + file.getCreationDate().substring(4, 6) + "15-21";
+                    }
+                    else {
+                        return file.getCreationDate().substring(0, 4) + file.getCreationDate().substring(4, 6) + "22-31";
+                    }
+                case MONTH:
+                    return file.getCreationDate().substring(0,6);
+                default:
+                    throw new InvalidObjectException("Organize type is not valid");
+            }
+        }
+        catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public void shutdown() {
+        fileTaskManager.shutdown();
     }
 
     public String getFileExtension(String fileName) {
