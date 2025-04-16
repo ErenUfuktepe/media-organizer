@@ -1,11 +1,10 @@
 # Media Organizer
-<hr>
 
 Media Organizer is a lightweight Java Swing desktop application that helps you organize your media files (photos, videos, etc.) by their creation date. 
 It lets you filter files by day, week, or month, and copies them into a new folder on your Desktop, organized into subfolders based on the selected time filter.
 
 ## Features
-<hr>
+
 
 * **Organize by Creation Date:** Automatically sorts your media files into subfolders by the date they were created.
 * **Filter by Time Range:** Choose to organize files by day, week, or month.
@@ -16,7 +15,6 @@ It lets you filter files by day, week, or month, and copies them into a new fold
 
 
 ## Getting Started
-<hr>
 
 ### Requirements
 
@@ -31,7 +29,6 @@ It lets you filter files by day, week, or month, and copies them into a new fold
 
 
 ## How It Works
-<hr>
 
 1) Select a source folder containing your media files.
 2) Choose a filter type: by day, week, or month.
@@ -40,7 +37,6 @@ It lets you filter files by day, week, or month, and copies them into a new fold
 
 
 ## Tech Stack
-<hr>
 
 * Java 21
 * Java Swing (for the UI)
